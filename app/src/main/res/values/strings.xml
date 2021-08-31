@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Notes</string>
+    <string name="add_note_label">Add</string>
+    <string name="details_name_hint">Name</string>
+    <string name="details_desc_hint">Description</string>
+    <string name="details_button_delete_label">Delete</string>
+    <string name="details_button_save_label">Save</string>
 </resources>
