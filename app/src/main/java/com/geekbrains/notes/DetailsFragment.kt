@@ -6,6 +6,8 @@ import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.activityViewModels
+import java.text.SimpleDateFormat
+import java.util.*
 
 class DetailsFragment : Fragment(R.layout.details_fragment) {
     private lateinit var nameText: TextView
@@ -13,10 +15,12 @@ class DetailsFragment : Fragment(R.layout.details_fragment) {
     private lateinit var descText: TextView
     private val model: MainViewModel by activityViewModels()
     private var currentItem: Int = 0
+    private val dateFormat = SimpleDateFormat("yyyy.MM.dd HH:mm:ss z")
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         nameText = view.findViewById(R.id.details_name)
+        dateText = view.findViewById(R.id.details_date)
         descText = view.findViewById(R.id.details_desc)
         view.findViewById<Button>(R.id.details_button_save).setOnClickListener { handleSave() }
         view.findViewById<Button>(R.id.details_button_delete).setOnClickListener { handleDelete() }
@@ -30,17 +34,28 @@ class DetailsFragment : Fragment(R.layout.details_fragment) {
         if (currentItemGood()) {
             nameText.text = model.items[currentItem].name
             descText.text = model.items[currentItem].desc
+            dateText.text = formatDate(model.items[currentItem].date)
         } else {
             nameText.text = ""
+            dateText.text = ""
             descText.text = ""
         }
+    }
+
+    fun formatDate(date: Date): String {
+        return dateFormat.format(date)
+    }
+
+    fun parseDate(str: String): Date {
+        return if (str.equals("")) Date() else dateFormat.parse(str)
     }
 
     fun handleSave() {
         if (currentItemGood()) {
             model.items[currentItem] = Item(
                 nameText.text.toString(),
-                descText.text.toString()
+                descText.text.toString(),
+                parseDate(dateText.text.toString())
             )
             model.modifiedNoteId.value = currentItem
         }
