@@ -1,13 +1,16 @@
 package com.geekbrains.notes
 
+import android.app.DatePickerDialog
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 class DetailsFragment : Fragment(R.layout.details_fragment) {
     private lateinit var nameText: TextView
@@ -24,6 +27,7 @@ class DetailsFragment : Fragment(R.layout.details_fragment) {
         descText = view.findViewById(R.id.details_desc)
         view.findViewById<Button>(R.id.details_button_save).setOnClickListener { handleSave() }
         view.findViewById<Button>(R.id.details_button_delete).setOnClickListener { handleDelete() }
+        view.findViewById<ImageButton>(R.id.details_date_picker).setOnClickListener { pickDate() }
         model.selectedNoteId.observe(viewLifecycleOwner, { id -> handleSelectedNote(id) })
     }
 
@@ -34,7 +38,7 @@ class DetailsFragment : Fragment(R.layout.details_fragment) {
         if (currentItemGood()) {
             nameText.text = model.items[currentItem].name
             descText.text = model.items[currentItem].desc
-            dateText.text = formatDate(model.items[currentItem].date)
+            writeDate(model.items[currentItem].date)
         } else {
             nameText.text = ""
             dateText.text = ""
@@ -42,12 +46,13 @@ class DetailsFragment : Fragment(R.layout.details_fragment) {
         }
     }
 
-    fun formatDate(date: Date): String {
-        return dateFormat.format(date)
+    fun writeDate(date: Date) {
+        dateText.text = dateFormat.format(date)
     }
 
-    fun parseDate(str: String): Date {
-        return if (str.equals("")) Date() else dateFormat.parse(str)
+    fun readDate(): Date {
+        val str = dateText.text.toString()
+        return if (str.equals("")) Date() else dateFormat.parse(str)!!
     }
 
     fun handleSave() {
@@ -55,7 +60,7 @@ class DetailsFragment : Fragment(R.layout.details_fragment) {
             model.items[currentItem] = Item(
                 nameText.text.toString(),
                 descText.text.toString(),
-                parseDate(dateText.text.toString())
+                readDate()
             )
             model.modifiedNoteId.value = currentItem
         }
@@ -69,5 +74,30 @@ class DetailsFragment : Fragment(R.layout.details_fragment) {
             }
             model.removedItem.value = currentItem
         }
+    }
+
+    fun pickDate() {
+        val d = readDate()
+        val c = Calendar.getInstance()
+        c.time = d
+        val dy = c.get(Calendar.YEAR)
+        val dm = c.get(Calendar.MONTH)
+        val dd = c.get(Calendar.DAY_OF_MONTH)
+        val picker = DatePickerDialog(
+            requireContext(),
+            { view, year, month, dayOfMonth -> modifyDate(year, month, dayOfMonth) },
+            dy, dm, dd
+        )
+        picker.show()
+    }
+
+    fun modifyDate(year: Int, month: Int, dayOfMonth: Int) {
+        val d = readDate()
+        val c = Calendar.getInstance()
+        c.time = d
+        c.set(Calendar.YEAR, year)
+        c.set(Calendar.MONTH, month)
+        c.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+        writeDate(c.time)
     }
 }
