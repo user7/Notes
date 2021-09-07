@@ -6,4 +6,5 @@
     <string name="details_button_delete_label">Delete</string>
     <string name="details_button_save_label">Save</string>
     <string name="about">About</string>
+    <string name="unimplemented">Unimplemented :(</string>
 </resources>
