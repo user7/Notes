@@ -5,4 +5,10 @@
     <string name="details_desc_hint">Description</string>
     <string name="details_button_delete_label">Delete</string>
     <string name="details_button_save_label">Save</string>
+    <string name="about">About</string>
+    <string name="unimplemented">Unimplemented :(</string>
+    <string name="nav_drawer">Nav Drawer</string>
+    <string name="help">Help</string>
+    <string name="drawer_open_label">Open</string>
+    <string name="drawer_close_label">Close</string>
 </resources>
