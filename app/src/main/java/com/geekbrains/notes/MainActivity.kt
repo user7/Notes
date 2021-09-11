@@ -70,9 +70,9 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
-    fun handleMenu(item: MenuItem): Boolean {
-        if (item.itemId == R.id.about)
-            return unimplemented()
-        return false
-    }
+    fun handleMenu(item: MenuItem): Boolean =
+        when (item.itemId) {
+            R.id.about -> unimplemented()
+            else -> false
+        }
 }
