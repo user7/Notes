@@ -8,5 +8,5 @@ class MainViewModel : ViewModel() {
     val items: Items = Items()
     val modifiedNoteId: MutableLiveData<Int> = MutableLiveData()
     val selectedNoteId: MutableLiveData<Int> = MutableLiveData()
-    var removedItem: MutableLiveData<Int> = MutableLiveData()
+    val removedItem: MutableLiveData<Int> = MutableLiveData()
 }
