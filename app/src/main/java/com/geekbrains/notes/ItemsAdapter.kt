@@ -21,8 +21,7 @@ class ItemsAdapter(val model: MainViewModel) : RecyclerView.Adapter<ItemsAdapter
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.textView.text = model.getItem(position)!!.name
         holder.textView.setOnClickListener {
-            model.selectItem(position)
-            model.setInterfaceState(MainViewModel.InterfaceState.SHOW_DETAILS)
+            model.editOldItem(position)
         }
     }
 
@@ -31,5 +30,10 @@ class ItemsAdapter(val model: MainViewModel) : RecyclerView.Adapter<ItemsAdapter
     fun handleRemove(index: Int) {
         notifyItemRemoved(index)
         notifyItemRangeChanged(index, model.getItemsCount())
+    }
+
+    fun handleInsert(index: Int) {
+        notifyItemInserted(index)
+        notifyItemRangeChanged(index + 1, model.getItemsCount())
     }
 }

@@ -24,7 +24,6 @@ class DetailsFragment : Fragment(R.layout.details_fragment) {
     private var editingEnabled: Boolean = false
 
     private val model: MainViewModel by activityViewModels()
-    private var currentItem = -1
     private val dateFormat = SimpleDateFormat("yyyy.MM.dd HH:mm:ss z")
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -38,8 +37,8 @@ class DetailsFragment : Fragment(R.layout.details_fragment) {
         deleteButton.setOnClickListener { handleDelete() }
         datePickerButton = view.findViewById(R.id.details_date_picker)
         datePickerButton.setOnClickListener { pickDate() }
-        handleSelectedItem(-1)
-        model.selectedItemIndex.observe(viewLifecycleOwner) { id -> handleSelectedItem(id) }
+        handleInterfaceStateChanged()
+        model.interfaceState.observe(viewLifecycleOwner) { state -> handleInterfaceStateChanged() }
     }
 
     private fun setEditingEnabled(b: Boolean) {
@@ -52,20 +51,35 @@ class DetailsFragment : Fragment(R.layout.details_fragment) {
         editingEnabled = b
     }
 
-    private fun handleSelectedItem(index: Int) {
-        val item: Item? = model.getItem(index)
-        currentItem = index
-        if (item != null) {
-            nameText.text = item.name
-            descText.text = item.desc
-            setDate(item.date)
-            setEditingEnabled(true)
-        } else {
-            nameText.text = ""
-            descText.text = ""
-            dateText.text = ""
-            setEditingEnabled(false)
+    // произошел какой-то апдейт интерфейса, возможно надо перерисовать
+    private fun handleInterfaceStateChanged() {
+        val pos = model.getEditingPos()
+        when {
+            // нет операции, чистим и выключаем
+            !pos.isValid() -> clearFieldsSetEnabled(false)
+
+            // вставка, чистим и включаем, ставим текущую дату
+            pos.insertNew -> {
+                clearFieldsSetEnabled(true)
+                setDate(Date())
+            }
+
+            // иначе это редактирование, индекс обязан быть валидным, поэтому !!
+            else -> {
+                val item: Item = model.getItem(pos.index)!!
+                nameText.text = item.name
+                descText.text = item.desc
+                setDate(item.date)
+                setEditingEnabled(true)
+            }
         }
+    }
+
+    private fun clearFieldsSetEnabled(setEnabled: Boolean) {
+        nameText.text = ""
+        descText.text = ""
+        dateText.text = ""
+        setEditingEnabled(setEnabled)
     }
 
     private fun setDate(date: Date) {
@@ -74,17 +88,18 @@ class DetailsFragment : Fragment(R.layout.details_fragment) {
     }
 
     private fun handleSave() {
-        model.saveEditedItem(
-            currentItem, Item(
-                nameText.text.toString(),
-                descText.text.toString(),
-                dateValue
-            )
-        )
+        val pos = model.getEditingPos()
+        val item = Item(nameText.text.toString(), descText.text.toString(), dateValue)
+        if (pos.insertNew) {
+            model.insertEditedItem(pos.index, item)
+        } else {
+            model.saveEditedItem(pos.index, item)
+        }
+        model.setInterfaceState(MainViewModel.InterfaceState.SHOW_LIST)
     }
 
     private fun handleDelete() {
-        model.removeItem(currentItem)
+        model.removeOrDiscardEditedItem()
     }
 
     private fun pickDate() {

@@ -18,9 +18,9 @@ class ListFragment : Fragment(R.layout.list_fragment) {
 
         model.modifiedItemIndex.observe(viewLifecycleOwner) { id -> adapter.notifyItemChanged(id) }
         model.removedItemIndex.observe(viewLifecycleOwner) { id -> adapter.handleRemove(id) }
+        model.insertedItemIndex.observe(viewLifecycleOwner) { id -> adapter.handleInsert(id) }
         view.findViewById<Button>(R.id.add_note).setOnClickListener {
-            model.addNewItem()
-            model.setInterfaceState(MainViewModel.InterfaceState.SHOW_DETAILS)
+            model.editNewItem()
         }
 
         view.findViewById<RecyclerView>(R.id.notes_list).adapter = adapter
