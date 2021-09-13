@@ -119,6 +119,6 @@ class DetailsFragment : Fragment(R.layout.details_fragment) {
         c.set(Calendar.YEAR, year)
         c.set(Calendar.MONTH, month)
         c.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-        dateValue = c.time
+        setDate(c.time)
     }
 }
