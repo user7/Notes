@@ -5,7 +5,6 @@ import android.view.View
 import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 class ListFragment : Fragment(R.layout.list_fragment) {
@@ -16,9 +15,9 @@ class ListFragment : Fragment(R.layout.list_fragment) {
         super.onViewCreated(view, savedInstanceState)
         adapter = ItemsAdapter(model)
 
-        model.modifiedItemIndex.observe(viewLifecycleOwner) { id -> adapter.notifyItemChanged(id) }
-        model.removedItemIndex.observe(viewLifecycleOwner) { id -> adapter.handleRemove(id) }
-        model.insertedItemIndex.observe(viewLifecycleOwner) { id -> adapter.handleInsert(id) }
+        model.modifiedItemIndex.observe(viewLifecycleOwner) { i -> adapter.notifyItemChanged(i) }
+        model.removedItemIndex.observe(viewLifecycleOwner) { i -> adapter.handleRemove(i) }
+        model.insertedItemIndex.observe(viewLifecycleOwner) { i -> adapter.handleInsert(i) }
         view.findViewById<Button>(R.id.add_note).setOnClickListener {
             model.editNewItem()
         }

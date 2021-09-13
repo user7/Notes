@@ -20,9 +20,7 @@ class ItemsAdapter(val model: MainViewModel) : RecyclerView.Adapter<ItemsAdapter
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.textView.text = model.getItem(position)!!.name
-        holder.textView.setOnClickListener {
-            model.editOldItem(position)
-        }
+        holder.textView.setOnClickListener { model.editOldItem(position) }
     }
 
     override fun getItemCount(): Int = model.getItemsCount()

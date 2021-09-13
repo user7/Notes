@@ -8,7 +8,7 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import java.text.SimpleDateFormat
+import java.text.DateFormat.getDateTimeInstance
 import java.util.*
 
 
@@ -24,7 +24,7 @@ class DetailsFragment : Fragment(R.layout.details_fragment) {
     private var editingEnabled: Boolean = false
 
     private val model: MainViewModel by activityViewModels()
-    private val dateFormat = SimpleDateFormat("yyyy.MM.dd HH:mm:ss z")
+    private val dateFormat = getDateTimeInstance()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -38,7 +38,7 @@ class DetailsFragment : Fragment(R.layout.details_fragment) {
         datePickerButton = view.findViewById(R.id.details_date_picker)
         datePickerButton.setOnClickListener { pickDate() }
         handleInterfaceStateChanged()
-        model.interfaceState.observe(viewLifecycleOwner) { state -> handleInterfaceStateChanged() }
+        model.interfaceState.observe(viewLifecycleOwner) { _ -> handleInterfaceStateChanged() }
     }
 
     private fun setEditingEnabled(b: Boolean) {
@@ -107,7 +107,7 @@ class DetailsFragment : Fragment(R.layout.details_fragment) {
         c.time = dateValue
         val picker = DatePickerDialog(
             requireContext(),
-            { view, year, month, dayOfMonth -> modifyDate(year, month, dayOfMonth) },
+            { _, year, month, dayOfMonth -> modifyDate(year, month, dayOfMonth) },
             c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)
         )
         picker.show()
