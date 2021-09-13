@@ -19,11 +19,17 @@ class ItemsAdapter(val model: MainViewModel) : RecyclerView.Adapter<ItemsAdapter
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.textView.text = model.items[position].name
+        holder.textView.text = model.getItem(position)!!.name
         holder.textView.setOnClickListener {
-            model.selectedNoteId.value = position
+            model.selectItem(position)
+            model.setInterfaceState(MainViewModel.InterfaceState.SHOW_DETAILS)
         }
     }
 
-    override fun getItemCount(): Int = model.items.size
+    override fun getItemCount(): Int = model.getItemsCount()
+
+    fun handleRemove(index: Int) {
+        notifyItemRemoved(index)
+        notifyItemRangeChanged(index, model.getItemsCount())
+    }
 }

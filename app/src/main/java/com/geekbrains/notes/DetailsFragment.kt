@@ -14,10 +14,17 @@ import java.util.*
 
 class DetailsFragment : Fragment(R.layout.details_fragment) {
     private lateinit var nameText: TextView
-    private lateinit var dateText: TextView
     private lateinit var descText: TextView
+    private lateinit var dateText: TextView
+    private var dateValue = Date()
+
+    private lateinit var saveButton: Button
+    private lateinit var deleteButton: Button
+    private lateinit var datePickerButton: ImageButton
+    private var editingEnabled: Boolean = false
+
     private val model: MainViewModel by activityViewModels()
-    private var currentItem: Int = 0
+    private var currentItem = -1
     private val dateFormat = SimpleDateFormat("yyyy.MM.dd HH:mm:ss z")
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -25,79 +32,78 @@ class DetailsFragment : Fragment(R.layout.details_fragment) {
         nameText = view.findViewById(R.id.details_name)
         dateText = view.findViewById(R.id.details_date)
         descText = view.findViewById(R.id.details_desc)
-        view.findViewById<Button>(R.id.details_button_save).setOnClickListener { handleSave() }
-        view.findViewById<Button>(R.id.details_button_delete).setOnClickListener { handleDelete() }
-        view.findViewById<ImageButton>(R.id.details_date_picker).setOnClickListener { pickDate() }
-        model.selectedNoteId.observe(viewLifecycleOwner, { id -> handleSelectedNote(id) })
+        saveButton = view.findViewById(R.id.details_button_save)
+        saveButton.setOnClickListener { handleSave() }
+        deleteButton = view.findViewById(R.id.details_button_delete)
+        deleteButton.setOnClickListener { handleDelete() }
+        datePickerButton = view.findViewById(R.id.details_date_picker)
+        datePickerButton.setOnClickListener { pickDate() }
+        handleSelectedItem(-1)
+        model.selectedItemIndex.observe(viewLifecycleOwner) { id -> handleSelectedItem(id) }
     }
 
-    fun currentItemGood() = 0 <= currentItem && currentItem < model.items.size
+    private fun setEditingEnabled(b: Boolean) {
+        nameText.isEnabled = b
+        descText.isEnabled = b
+        dateText.isEnabled = b
+        saveButton.isEnabled = b
+        datePickerButton.isEnabled = b
+        deleteButton.isEnabled = b
+        editingEnabled = b
+    }
 
-    fun handleSelectedNote(id: Int) {
-        currentItem = id
-        if (currentItemGood()) {
-            nameText.text = model.items[currentItem].name
-            descText.text = model.items[currentItem].desc
-            writeDate(model.items[currentItem].date)
+    private fun handleSelectedItem(index: Int) {
+        val item: Item? = model.getItem(index)
+        currentItem = index
+        if (item != null) {
+            nameText.text = item.name
+            descText.text = item.desc
+            setDate(item.date)
+            setEditingEnabled(true)
         } else {
             nameText.text = ""
-            dateText.text = ""
             descText.text = ""
+            dateText.text = ""
+            setEditingEnabled(false)
         }
     }
 
-    fun writeDate(date: Date) {
+    private fun setDate(date: Date) {
         dateText.text = dateFormat.format(date)
+        dateValue = date
     }
 
-    fun readDate(): Date {
-        val str = dateText.text.toString()
-        return if (str.equals("")) Date() else dateFormat.parse(str)!!
-    }
-
-    fun handleSave() {
-        if (currentItemGood()) {
-            model.items[currentItem] = Item(
+    private fun handleSave() {
+        model.saveEditedItem(
+            currentItem, Item(
                 nameText.text.toString(),
                 descText.text.toString(),
-                readDate()
+                dateValue
             )
-            model.modifiedNoteId.value = currentItem
-        }
+        )
     }
 
-    fun handleDelete() {
-        if (currentItemGood()) {
-            model.items.removeAt(currentItem)
-            if (currentItem == model.items.size) {
-                currentItem--
-            }
-            model.removedItem.value = currentItem
-        }
+    private fun handleDelete() {
+        model.removeItem(currentItem)
     }
 
-    fun pickDate() {
-        val d = readDate()
+    private fun pickDate() {
         val c = Calendar.getInstance()
-        c.time = d
-        val dy = c.get(Calendar.YEAR)
-        val dm = c.get(Calendar.MONTH)
-        val dd = c.get(Calendar.DAY_OF_MONTH)
+        c.time = dateValue
         val picker = DatePickerDialog(
             requireContext(),
             { view, year, month, dayOfMonth -> modifyDate(year, month, dayOfMonth) },
-            dy, dm, dd
+            c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)
         )
         picker.show()
     }
 
-    fun modifyDate(year: Int, month: Int, dayOfMonth: Int) {
-        val d = readDate()
+    private fun modifyDate(year: Int, month: Int, dayOfMonth: Int) {
         val c = Calendar.getInstance()
-        c.time = d
+        c.time = dateValue
         c.set(Calendar.YEAR, year)
         c.set(Calendar.MONTH, month)
         c.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-        writeDate(c.time)
+        dateValue = c.time
     }
 }

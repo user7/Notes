@@ -2,6 +2,8 @@ package com.geekbrains.notes
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import android.view.SurfaceControl
 import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
 
@@ -12,29 +14,31 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         isPortrait = resources.getBoolean(R.bool.isPortrait)
-        model.selectedNoteId.observe(this, { id -> showDetailsFragment() })
-        model.removedItem.observe(this, { id -> showListFragment() })
-        model.modifiedNoteId.observe(this, { id -> showListFragment() })
+        model.interfaceState.observe(this) { state -> handleStateChange(state) }
         setContentView(R.layout.activity_main)
+
+        // приводим интерфейс в изначальное состояние
         if (isPortrait) {
-            supportFragmentManager.beginTransaction().hide(detailFrag()).show(listFrag()).commit()
+            handleStateChange(model.interfaceState.value!!)
         } else {
             supportFragmentManager.beginTransaction().show(detailFrag()).show(listFrag()).commit()
         }
     }
 
-    fun showDetailsFragment() {
+    private fun handleStateChange(state: MainViewModel.InterfaceState) {
+        // только в портретном режиме надо переключать отображаемый фрагмент
         if (isPortrait) {
-            supportFragmentManager.beginTransaction().hide(listFrag()).show(detailFrag()).commit()
+            val t = supportFragmentManager.beginTransaction()
+            when (state) {
+                MainViewModel.InterfaceState.SHOW_LIST -> t.hide(detailFrag()).show(listFrag())
+                MainViewModel.InterfaceState.SHOW_DETAILS -> t.hide(listFrag()).show(detailFrag())
+            }.commit()
         }
     }
 
-    fun showListFragment() {
-        if (isPortrait) {
-            supportFragmentManager.beginTransaction().hide(detailFrag()).show(listFrag()).commit()
-        }
-    }
+    private fun listFrag(): Fragment =
+        supportFragmentManager.findFragmentByTag("list_fragment_tag")!!
 
-    fun listFrag(): Fragment = supportFragmentManager.findFragmentByTag("list_fragment_tag")!!
-    fun detailFrag(): Fragment = supportFragmentManager.findFragmentByTag("details_fragment_tag")!!
+    private fun detailFrag(): Fragment =
+        supportFragmentManager.findFragmentByTag("details_fragment_tag")!!
 }
