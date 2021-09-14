@@ -4,7 +4,6 @@ import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
-import android.widget.ImageButton
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -20,7 +19,6 @@ class DetailsFragment : Fragment(R.layout.details_fragment) {
 
     private lateinit var saveButton: Button
     private lateinit var deleteButton: Button
-    private lateinit var datePickerButton: ImageButton
 
     private val model: MainViewModel by activityViewModels()
     private val dateFormat = getDateTimeInstance()
@@ -29,13 +27,12 @@ class DetailsFragment : Fragment(R.layout.details_fragment) {
         super.onViewCreated(view, savedInstanceState)
         nameText = view.findViewById(R.id.details_name)
         dateText = view.findViewById(R.id.details_date)
+        dateText.setOnClickListener { pickDate() }
         descText = view.findViewById(R.id.details_desc)
         saveButton = view.findViewById(R.id.details_button_save)
         saveButton.setOnClickListener { handleSave() }
         deleteButton = view.findViewById(R.id.details_button_delete)
         deleteButton.setOnClickListener { handleDelete() }
-        datePickerButton = view.findViewById(R.id.details_date_picker)
-        datePickerButton.setOnClickListener { pickDate() }
         model.interfaceState.observe(viewLifecycleOwner) { _ -> handleInterfaceStateChanged() }
     }
 
@@ -49,7 +46,6 @@ class DetailsFragment : Fragment(R.layout.details_fragment) {
         descText.isEnabled = b
         dateText.isEnabled = b
         saveButton.isEnabled = b
-        datePickerButton.isEnabled = b
         deleteButton.isEnabled = b
     }
 

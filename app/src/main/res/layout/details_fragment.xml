@@ -32,27 +32,9 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="end"
-        app:layout_constraintBottom_toBottomOf="@id/details_date_picker"
-        app:layout_constraintEnd_toStartOf="@id/details_date_picker"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/details_button_delete" />
-
-    <ImageButton
-        android:id="@+id/details_date_picker"
-        android:layout_width="50dp"
-        android:layout_height="38dp"
-        android:contentDescription="@string/details_date_picker_desc"
-        android:src="@android:drawable/ic_menu_edit"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/details_button_delete" />
-
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/date_bottom_barrier"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:barrierDirection="bottom"
-        app:constraint_referenced_ids="details_date,details_date_picker"
-        tools:layout_editor_absoluteY="731dp" />
 
     <EditText
         android:id="@+id/details_name"
@@ -63,8 +45,7 @@
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/date_bottom_barrier" />
-
+        app:layout_constraintTop_toBottomOf="@id/details_date" />
 
     <EditText
         android:id="@+id/details_desc"
