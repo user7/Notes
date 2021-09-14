@@ -30,13 +30,21 @@ class MainViewModel : ViewModel() {
     fun setInterfaceState(state: InterfaceState) = mutableInterfaceState.postValue(state)
     val interfaceState: LiveData<InterfaceState> = mutableInterfaceState
 
-    // -1,* = невалидная позиция; i,true = вставить в позицию i; i,false = редактировать элемент i
-    data class EditingPos(val index: Int = -1, val insertNew: Boolean = false) {
+    // index = -1 - невалидная позиция, остальные поля игнорируются
+    // index >= 0 - индекс где редактировать или вставить новый, от 0 до size - 1
+    // insertNew = false - редактировать элемент index
+    // insertNew = true - вставить новый элемент после элемента index
+    // editingFields - набор начальных значений полей, также используется при реконфигурации
+    data class EditingState(
+        val index: Int = -1,
+        val insertNew: Boolean = false,
+        var editingFields: Item = Item(),
+    ) {
         fun isValid() = index != -1
     }
 
-    private var editingPos: EditingPos = EditingPos()
-    fun getEditingPos() = editingPos
+    private var editingState: EditingState = EditingState()
+    fun getEditingState() = editingState
 
     fun editNewItem() {
         val index: Int
@@ -44,12 +52,12 @@ class MainViewModel : ViewModel() {
             index = selectedIndex + 1
         else
             index = items.size
-        setEditingPos(index, true)
+        setEditingState(index, true)
         setInterfaceState(InterfaceState.SHOW_DETAILS)
     }
 
     fun editOldItem(index: Int) {
-        setEditingPos(index, false)
+        setEditingState(index, false)
         setInterfaceState(InterfaceState.SHOW_DETAILS)
     }
 
@@ -62,47 +70,43 @@ class MainViewModel : ViewModel() {
             items[index] = item
             mutableModifiedItemIndex.postValue(index)
         }
-        setEditingPos(index, false)
+        setEditingState(index, false)
         setInterfaceState(InterfaceState.SHOW_LIST)
     }
 
     fun insertEditedItem(index: Int, item: Item) {
         items.add(index, item)
-        setEditingPos(index, false)
+        setEditingState(index, false)
         mutableInsertedItemIndex.postValue(index)
         setInterfaceState(InterfaceState.SHOW_LIST)
     }
 
     fun cancelEditing() {
-        setEditingPos(-1)
+        setEditingState(-1, false)
         setInterfaceState(InterfaceState.SHOW_LIST)
     }
 
     fun removeOrDiscardEditedItem() {
-        if (editingPos.insertNew) {
-            setEditingPos(editingPos.index, false)
+        if (editingState.insertNew) {
+            setEditingState(editingState.index, false)
         } else {
-            items.removeAt(editingPos.index)
-            mutableRemovedItemIndex.postValue(editingPos.index)
-            val i = if (editingPos.index == items.size) editingPos.index - 1 else editingPos.index
-            setEditingPos(i)
+            items.removeAt(editingState.index)
+            mutableRemovedItemIndex.postValue(editingState.index)
+            val i =
+                if (editingState.index == items.size) editingState.index - 1 else editingState.index
+            setEditingState(i, false)
         }
         setInterfaceState(InterfaceState.SHOW_LIST)
     }
 
-    private fun setEditingPos(index: Int, insertNew: Boolean = false) {
-        var good = when {
-            index < 0 -> false
-            index == items.size && insertNew -> true
-            index >= items.size -> false
-            else -> true
-        }
-        if (good) {
-            editingPos = EditingPos(index, insertNew)
-            selectedIndex = index
+    private fun setEditingState(index: Int, insertNew: Boolean) {
+        if (index < 0 || index > items.size || (items.size == index && !insertNew)) {
+            editingState = EditingState()
+        } else if (insertNew) {
+            editingState = EditingState(index, insertNew)
         } else {
-            editingPos = EditingPos()
-            selectedIndex = -1
+            editingState = EditingState(index, insertNew, items[index])
         }
+        selectedIndex = editingState.index
     }
 }
