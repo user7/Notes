@@ -23,6 +23,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onBackPressed() {
+        if (model.interfaceState.value == MainViewModel.InterfaceState.SHOW_DETAILS) {
+            model.cancelEditing()
+        } else {
+            finish()
+        }
+    }
+
     private fun handleStateChange(state: MainViewModel.InterfaceState) {
         // только в портретном режиме надо переключать отображаемый фрагмент
         if (isPortrait) {
