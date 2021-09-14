@@ -21,7 +21,6 @@ class DetailsFragment : Fragment(R.layout.details_fragment) {
     private lateinit var saveButton: Button
     private lateinit var deleteButton: Button
     private lateinit var datePickerButton: ImageButton
-    private var editingEnabled: Boolean = false
 
     private val model: MainViewModel by activityViewModels()
     private val dateFormat = getDateTimeInstance()
@@ -52,7 +51,6 @@ class DetailsFragment : Fragment(R.layout.details_fragment) {
         saveButton.isEnabled = b
         datePickerButton.isEnabled = b
         deleteButton.isEnabled = b
-        editingEnabled = b
     }
 
     // произошел какой-то апдейт интерфейса, надо восстановить значения полей
