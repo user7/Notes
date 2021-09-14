@@ -6,14 +6,24 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class ItemsAdapter(val model: MainViewModel) : RecyclerView.Adapter<ItemsAdapter.ViewHolder>() {
+class ItemsAdapter(val model: MainViewModel, val listFragment: ListFragment) :
+    RecyclerView.Adapter<ItemsAdapter.ViewHolder>() {
+
+    private var contextMenuItemIndex: Int = -1
+    fun getContextMenuItemIndex() = contextMenuItemIndex
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val textView: TextView = view.findViewById(R.id.notes_list_item_text)
         fun getTextView() = textView
 
         init {
+            listFragment.registerForContextMenu(view)
             textView.setOnClickListener { model.editOldItem(adapterPosition) }
+            textView.setOnLongClickListener {
+                textView.showContextMenu()
+                contextMenuItemIndex = adapterPosition
+                true
+            }
         }
     }
 

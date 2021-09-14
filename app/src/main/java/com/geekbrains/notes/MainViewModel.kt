@@ -100,6 +100,11 @@ class MainViewModel : ViewModel() {
         setInterfaceState(InterfaceState.SHOW_LIST)
     }
 
+    fun removeItem(index: Int) {
+        items.removeAt(index)
+        mutableRemovedItemIndex.postValue(index)
+    }
+
     private fun setupEditNew(index: Int) {
         if (index < 0 || index > items.size) { // при вставке индекс равный size валиден
             // специальны случай -1 допускается
