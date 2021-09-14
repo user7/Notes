@@ -8,8 +8,13 @@ import androidx.recyclerview.widget.RecyclerView
 
 class ItemsAdapter(val model: MainViewModel) : RecyclerView.Adapter<ItemsAdapter.ViewHolder>() {
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val textView: TextView = view.findViewById(R.id.notes_list_item_text)
+    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        private val textView: TextView = view.findViewById(R.id.notes_list_item_text)
+        fun getTextView() = textView
+
+        init {
+            textView.setOnClickListener { model.editOldItem(adapterPosition) }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -19,19 +24,16 @@ class ItemsAdapter(val model: MainViewModel) : RecyclerView.Adapter<ItemsAdapter
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.textView.text = model.getItem(position)!!.name
-        holder.textView.setOnClickListener { model.editOldItem(position) }
+        holder.getTextView().text = model.getItem(position)!!.name
     }
 
     override fun getItemCount(): Int = model.getItemsCount()
 
     fun handleRemove(index: Int) {
         notifyItemRemoved(index)
-        notifyItemRangeChanged(index, model.getItemsCount())
     }
 
     fun handleInsert(index: Int) {
         notifyItemInserted(index)
-        notifyItemRangeChanged(index + 1, model.getItemsCount())
     }
 }
