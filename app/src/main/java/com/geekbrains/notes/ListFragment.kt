@@ -5,7 +5,6 @@ import android.view.View
 import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 class ListFragment : Fragment(R.layout.list_fragment) {
@@ -16,22 +15,13 @@ class ListFragment : Fragment(R.layout.list_fragment) {
         super.onViewCreated(view, savedInstanceState)
         adapter = ItemsAdapter(model)
 
-        model.modifiedNoteId.observe(viewLifecycleOwner, { id -> adapter.notifyItemChanged(id) })
-        model.removedItem.observe(viewLifecycleOwner, { id -> handleRemove(id) })
-
+        model.modifiedItemIndex.observe(viewLifecycleOwner) { i -> adapter.notifyItemChanged(i) }
+        model.removedItemIndex.observe(viewLifecycleOwner) { i -> adapter.handleRemove(i) }
+        model.insertedItemIndex.observe(viewLifecycleOwner) { i -> adapter.handleInsert(i) }
         view.findViewById<Button>(R.id.add_note).setOnClickListener {
-            model.items.add(Item())
-            model.selectedNoteId.value = model.items.size - 1
+            model.editNewItem()
         }
 
-        val rv = view.findViewById<RecyclerView>(R.id.notes_list)
-        rv.layoutManager =
-            LinearLayoutManager(view.context, LinearLayoutManager.VERTICAL, false)
-        rv.adapter = adapter
-    }
-
-    private fun handleRemove(id: Int) {
-        adapter.notifyItemRemoved(id)
-        adapter.notifyItemRangeChanged(id, model.items.size)
+        view.findViewById<RecyclerView>(R.id.notes_list).adapter = adapter
     }
 }
