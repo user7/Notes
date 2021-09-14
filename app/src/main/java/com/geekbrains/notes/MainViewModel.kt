@@ -53,12 +53,12 @@ class MainViewModel : ViewModel() {
         } else {
             index = items.size
         }
-        setEditingState(index, true)
+        setupEditNew(index)
         setInterfaceState(InterfaceState.SHOW_DETAILS)
     }
 
     fun editOldItem(index: Int) {
-        setEditingState(index, false)
+        setupEditOld(index)
         setInterfaceState(InterfaceState.SHOW_DETAILS)
     }
 
@@ -71,43 +71,56 @@ class MainViewModel : ViewModel() {
             items[index] = item
             mutableModifiedItemIndex.postValue(index)
         }
-        setEditingState(index, false)
+        setupEditOld(index)
         setInterfaceState(InterfaceState.SHOW_LIST)
     }
 
     fun insertEditedItem(index: Int, item: Item) {
         items.add(index, item)
-        setEditingState(index, false)
+        setupEditOld(index)
         mutableInsertedItemIndex.postValue(index)
         setInterfaceState(InterfaceState.SHOW_LIST)
     }
 
     fun cancelEditing() {
-        setEditingState(-1, false)
+        setupEditingDisabled()
         setInterfaceState(InterfaceState.SHOW_LIST)
     }
 
     fun removeOrDiscardEditedItem() {
         if (editingState.insertNew) {
-            setEditingState(editingState.index, false)
+            setupEditOld(editingState.index)
         } else {
             items.removeAt(editingState.index)
             mutableRemovedItemIndex.postValue(editingState.index)
             val i =
                 if (editingState.index == items.size) editingState.index - 1 else editingState.index
-            setEditingState(i, false)
+            setupEditOld(i)
         }
         setInterfaceState(InterfaceState.SHOW_LIST)
     }
 
-    private fun setEditingState(index: Int, insertNew: Boolean) {
-        if (index < 0 || index > items.size || (items.size == index && !insertNew)) {
-            editingState = EditingState()
-        } else if (insertNew) {
-            editingState = EditingState(index, insertNew)
+    private fun setupEditNew(index: Int) {
+        if (index < 0 || index > items.size) { // при вставке индекс равный size валиден
+            // специальны случай -1 допускается
+            assert(index == -1, { "incorrect usage of setupEditNew i=$index is not in [0,${items.size}]" })
+            setupEditingDisabled()
         } else {
-            editingState = EditingState(index, insertNew, items[index])
+            editingState = EditingState(index, true, Item())
         }
-        selectedIndex = editingState.index
+    }
+
+    private fun setupEditOld(index: Int) {
+        if (index < 0 || index >= items.size) { // при редактировании максимальный индекс size - 1
+            // специальны случай -1 допускается
+            assert(index == -1, { "incorrect usage of setupEditOld i=$index is not in [0,${items.size})" })
+            setupEditingDisabled()
+        } else {
+            editingState = EditingState(index, false, items[index])
+        }
+    }
+
+    private fun setupEditingDisabled() {
+        editingState = EditingState()
     }
 }
