@@ -37,7 +37,6 @@ class DetailsFragment : Fragment(R.layout.details_fragment) {
         deleteButton.setOnClickListener { handleDelete() }
         datePickerButton = view.findViewById(R.id.details_date_picker)
         datePickerButton.setOnClickListener { pickDate() }
-        handleInterfaceStateChanged()
         model.interfaceState.observe(viewLifecycleOwner) { _ -> handleInterfaceStateChanged() }
     }
 
