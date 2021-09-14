@@ -48,10 +48,11 @@ class MainViewModel : ViewModel() {
 
     fun editNewItem() {
         val index: Int
-        if (0 <= selectedIndex && selectedIndex < items.size)
+        if (0 <= selectedIndex && selectedIndex < items.size) {
             index = selectedIndex + 1
-        else
+        } else {
             index = items.size
+        }
         setEditingState(index, true)
         setInterfaceState(InterfaceState.SHOW_DETAILS)
     }
