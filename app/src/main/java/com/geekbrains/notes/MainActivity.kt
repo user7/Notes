@@ -2,8 +2,6 @@ package com.geekbrains.notes
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.view.SurfaceControl
 import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
 
@@ -22,6 +20,14 @@ class MainActivity : AppCompatActivity() {
             handleStateChange(model.interfaceState.value!!)
         } else {
             supportFragmentManager.beginTransaction().show(detailFrag()).show(listFrag()).commit()
+        }
+    }
+
+    override fun onBackPressed() {
+        if (model.interfaceState.value == MainViewModel.InterfaceState.SHOW_DETAILS) {
+            model.cancelEditing()
+        } else {
+            finish()
         }
     }
 

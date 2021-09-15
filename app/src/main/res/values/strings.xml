@@ -6,4 +6,6 @@
     <string name="details_button_delete_label">Delete</string>
     <string name="details_button_save_label">Save</string>
     <string name="details_date_picker_desc">Edit Date</string>
+    <string name="context_action_delete">Delete</string>
+    <string name="context_action_edit">Edit</string>
 </resources>

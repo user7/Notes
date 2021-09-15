@@ -4,7 +4,6 @@ import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
-import android.widget.ImageButton
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -20,8 +19,6 @@ class DetailsFragment : Fragment(R.layout.details_fragment) {
 
     private lateinit var saveButton: Button
     private lateinit var deleteButton: Button
-    private lateinit var datePickerButton: ImageButton
-    private var editingEnabled: Boolean = false
 
     private val model: MainViewModel by activityViewModels()
     private val dateFormat = getDateTimeInstance()
@@ -30,15 +27,18 @@ class DetailsFragment : Fragment(R.layout.details_fragment) {
         super.onViewCreated(view, savedInstanceState)
         nameText = view.findViewById(R.id.details_name)
         dateText = view.findViewById(R.id.details_date)
+        dateText.setOnClickListener { pickDate() }
         descText = view.findViewById(R.id.details_desc)
         saveButton = view.findViewById(R.id.details_button_save)
         saveButton.setOnClickListener { handleSave() }
         deleteButton = view.findViewById(R.id.details_button_delete)
         deleteButton.setOnClickListener { handleDelete() }
-        datePickerButton = view.findViewById(R.id.details_date_picker)
-        datePickerButton.setOnClickListener { pickDate() }
-        handleInterfaceStateChanged()
         model.interfaceState.observe(viewLifecycleOwner) { _ -> handleInterfaceStateChanged() }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        model.getEditingState().editingFields = getItemFromInputs()
     }
 
     private fun setEditingEnabled(b: Boolean) {
@@ -46,40 +46,14 @@ class DetailsFragment : Fragment(R.layout.details_fragment) {
         descText.isEnabled = b
         dateText.isEnabled = b
         saveButton.isEnabled = b
-        datePickerButton.isEnabled = b
         deleteButton.isEnabled = b
-        editingEnabled = b
     }
 
-    // произошел какой-то апдейт интерфейса, возможно надо перерисовать
+    // произошел какой-то апдейт интерфейса, надо восстановить значения полей
     private fun handleInterfaceStateChanged() {
-        val pos = model.getEditingPos()
-        when {
-            // нет операции, чистим и выключаем
-            !pos.isValid() -> clearFieldsSetEnabled(false)
-
-            // вставка, чистим и включаем, ставим текущую дату
-            pos.insertNew -> {
-                clearFieldsSetEnabled(true)
-                setDate(Date())
-            }
-
-            // иначе это редактирование, индекс обязан быть валидным, поэтому !!
-            else -> {
-                val item: Item = model.getItem(pos.index)!!
-                nameText.text = item.name
-                descText.text = item.desc
-                setDate(item.date)
-                setEditingEnabled(true)
-            }
-        }
-    }
-
-    private fun clearFieldsSetEnabled(setEnabled: Boolean) {
-        nameText.text = ""
-        descText.text = ""
-        dateText.text = ""
-        setEditingEnabled(setEnabled)
+        val es = model.getEditingState()
+        setInputsFromItem(es.editingFields)
+        setEditingEnabled(es.isValid())
     }
 
     private fun setDate(date: Date) {
@@ -87,9 +61,18 @@ class DetailsFragment : Fragment(R.layout.details_fragment) {
         dateValue = date
     }
 
+    private fun getItemFromInputs() =
+        Item(nameText.text.toString(), descText.text.toString(), dateValue)
+
+    private fun setInputsFromItem(item: Item) {
+        nameText.text = item.name
+        descText.text = item.desc
+        setDate(item.date)
+    }
+
     private fun handleSave() {
-        val pos = model.getEditingPos()
-        val item = Item(nameText.text.toString(), descText.text.toString(), dateValue)
+        val pos = model.getEditingState()
+        val item = getItemFromInputs()
         if (pos.insertNew) {
             model.insertEditedItem(pos.index, item)
         } else {
