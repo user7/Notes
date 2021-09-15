@@ -46,4 +46,8 @@ class ItemsAdapter(val model: MainViewModel, val listFragment: ListFragment) :
     fun handleInsert(index: Int) {
         notifyItemInserted(index)
     }
+
+    fun handleAddAll(index: Int) {
+        notifyItemRangeInserted(index, model.getItemsCount())
+    }
 }

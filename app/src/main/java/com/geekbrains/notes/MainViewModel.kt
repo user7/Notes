@@ -4,6 +4,7 @@ import androidx.lifecycle.*
 
 class MainViewModel : ViewModel() {
     private val items: Items = Items()
+    private val itemsRepository: ItemsRepository = ItemsRepositoryFirestore()
 
     private var selectedIndex: Int = -1
     fun getSelectedIndex() = selectedIndex
@@ -17,18 +18,30 @@ class MainViewModel : ViewModel() {
     private val mutableInsertedItemIndex: MutableLiveData<Int> = MutableLiveData()
     val insertedItemIndex: LiveData<Int> = mutableInsertedItemIndex
 
+    private val mutableInsertedItemsStart: MutableLiveData<Int> = MutableLiveData()
+    val insertedItemsStart: LiveData<Int> = mutableInsertedItemsStart
+
     // Режимы списка и деталей. Для портретной ориентации всегда показывается только один из двух
     // фрагментов. В альбомной ориентации лайот не зависит от режима, но при переключении
     // на SHOW_DETAILS происходит загрузка редактируемого элемента в DetailsFragment, обзервер
     // переменной interfaceState используется для отправки сигнала "обновись" из ListFragment
     // в DetailsFragment.
-    enum class InterfaceState { SHOW_LIST, SHOW_DETAILS }
+    enum class InterfaceState { SHOW_LIST, SHOW_DETAILS, SHOW_AUTH }
 
     private val mutableInterfaceState: MutableLiveData<InterfaceState> =
-        MutableLiveData(InterfaceState.SHOW_LIST)
+        MutableLiveData(InterfaceState.SHOW_AUTH)
 
     fun setInterfaceState(state: InterfaceState) = mutableInterfaceState.postValue(state)
     val interfaceState: LiveData<InterfaceState> = mutableInterfaceState
+
+    fun load() {
+        itemsRepository.getItems() {
+            items.addAll(it)
+            mutableInsertedItemsStart.postValue(this.items.size)
+        }
+    }
+
+    fun setUserId(userId: String) = itemsRepository.setUserId(userId)
 
     // index = -1 - невалидная позиция, остальные поля игнорируются
     // index >= 0 - индекс где редактировать или вставить новый, от 0 до size - 1
@@ -77,6 +90,7 @@ class MainViewModel : ViewModel() {
 
     fun insertEditedItem(index: Int, item: Item) {
         items.add(index, item)
+        itemsRepository.addItem(item)
         setupEditOld(index)
         mutableInsertedItemIndex.postValue(index)
         setInterfaceState(InterfaceState.SHOW_LIST)
@@ -91,8 +105,7 @@ class MainViewModel : ViewModel() {
         if (editingState.insertNew) {
             setupEditOld(editingState.index)
         } else {
-            items.removeAt(editingState.index)
-            mutableRemovedItemIndex.postValue(editingState.index)
+            removeItem(editingState.index)
             val i =
                 if (editingState.index == items.size) editingState.index - 1 else editingState.index
             setupEditOld(i)
@@ -101,6 +114,7 @@ class MainViewModel : ViewModel() {
     }
 
     fun removeItem(index: Int) {
+        itemsRepository.removeItem(items[index].uuid)
         items.removeAt(index)
         mutableRemovedItemIndex.postValue(index)
     }

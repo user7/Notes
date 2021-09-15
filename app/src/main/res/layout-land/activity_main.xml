@@ -5,6 +5,13 @@
     android:orientation="horizontal">
 
     <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/auth_fragment_container"
+        android:name="com.geekbrains.notes.AuthFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:tag="auth_fragment_tag" />
+
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/list_fragment_container"
         android:name="com.geekbrains.notes.ListFragment"
         android:layout_width="0dp"
