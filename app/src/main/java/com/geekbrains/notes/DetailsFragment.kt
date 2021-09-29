@@ -11,7 +11,7 @@ import java.text.DateFormat.getDateTimeInstance
 import java.util.*
 
 
-class DetailsFragment : Fragment(R.layout.details_fragment) {
+class DetailsFragment : Fragment(R.layout.fragment_details) {
     private lateinit var nameText: TextView
     private lateinit var descText: TextView
     private lateinit var dateText: TextView

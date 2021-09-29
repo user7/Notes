@@ -6,12 +6,11 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.Button
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.RecyclerView
 
-class ListFragment : Fragment(R.layout.list_fragment) {
+class ListFragment : Fragment(R.layout.fragment_list) {
     private val model: MainViewModel by activityViewModels()
     private lateinit var adapter: ItemsAdapter
 
@@ -22,6 +21,7 @@ class ListFragment : Fragment(R.layout.list_fragment) {
         model.modifiedItemIndex.observe(viewLifecycleOwner) { i -> adapter.notifyItemChanged(i) }
         model.removedItemIndex.observe(viewLifecycleOwner) { i -> adapter.handleRemove(i) }
         model.insertedItemIndex.observe(viewLifecycleOwner) { i -> adapter.handleInsert(i) }
+        model.insertedItemsStart.observe(viewLifecycleOwner) { i -> adapter.handleAddAll(i) }
         view.findViewById<Button>(R.id.add_note).setOnClickListener {
             model.editNewItem()
         }
