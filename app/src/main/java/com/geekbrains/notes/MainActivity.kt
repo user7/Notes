@@ -32,21 +32,21 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun handleStateChange(state: MainViewModel.InterfaceState) {
+        val t = supportFragmentManager.beginTransaction()
         if (isPortrait) {
-            val t = supportFragmentManager.beginTransaction()
             when (state) {
                 MainViewModel.InterfaceState.SHOW_LIST -> t.hide(authFrag()).hide(detailFrag()).show(listFrag())
                 MainViewModel.InterfaceState.SHOW_DETAILS -> t.hide(authFrag()).hide(listFrag()).show(detailFrag())
                 MainViewModel.InterfaceState.SHOW_AUTH -> t.show(authFrag()).hide(listFrag()).hide(detailFrag())
-            }.commit()
+            }
         } else {
-            val t = supportFragmentManager.beginTransaction()
             when (state) {
                 MainViewModel.InterfaceState.SHOW_LIST -> t.hide(authFrag()).show(detailFrag()).show(listFrag())
                 MainViewModel.InterfaceState.SHOW_DETAILS -> t.hide(authFrag()).show(listFrag()).show(detailFrag())
                 MainViewModel.InterfaceState.SHOW_AUTH -> t.show(authFrag()).hide(listFrag()).hide(detailFrag())
-            }.commit()
+            }
         }
+        t.commit()
     }
 
     private fun listFrag(): Fragment =
