@@ -51,7 +51,7 @@ class ItemsRepositoryFirestore : ItemsRepository {
             .report("delete $USERS.$userId.$ITEMS.${uuid.toString()}")
     }
 
-    override fun addItem(item: Item) {
+    override fun setItem(item: Item) {
         val data: Map<String, Any> = hashMapOf(
             NAME to item.name,
             DESC to item.desc,
@@ -59,7 +59,7 @@ class ItemsRepositoryFirestore : ItemsRepository {
         );
         db.collection(USERS).document(userId).collection(ITEMS)
             .document(item.uuid.toString()).set(data)
-            .report("add $USERS.$userId.$ITEMS.${item.uuid.toString()}")
+            .report("upsert $USERS.$userId.$ITEMS.${item.uuid.toString()}")
     }
 }
 

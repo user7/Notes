@@ -81,6 +81,7 @@ class MainViewModel : ViewModel() {
     fun saveEditedItem(index: Int, item: Item) {
         val old = items[index]
         if (old != item) { // data class Item
+            itemsRepository.setItem(item)
             items[index] = item
             mutableModifiedItemIndex.postValue(index)
         }
@@ -90,7 +91,7 @@ class MainViewModel : ViewModel() {
 
     fun insertEditedItem(index: Int, item: Item) {
         items.add(index, item)
-        itemsRepository.addItem(item)
+        itemsRepository.setItem(item)
         setupEditOld(index)
         mutableInsertedItemIndex.postValue(index)
         setInterfaceState(InterfaceState.SHOW_LIST)

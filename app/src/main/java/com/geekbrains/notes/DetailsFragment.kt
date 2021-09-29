@@ -16,6 +16,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
     private lateinit var descText: TextView
     private lateinit var dateText: TextView
     private var dateValue = Date()
+    private var uuid = UUID.randomUUID()
 
     private lateinit var saveButton: Button
     private lateinit var deleteButton: Button
@@ -62,12 +63,13 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
     }
 
     private fun getItemFromInputs() =
-        Item(nameText.text.toString(), descText.text.toString(), dateValue)
+        Item(nameText.text.toString(), descText.text.toString(), dateValue, uuid)
 
     private fun setInputsFromItem(item: Item) {
         nameText.text = item.name
         descText.text = item.desc
         setDate(item.date)
+        uuid = item.uuid
     }
 
     private fun handleSave() {

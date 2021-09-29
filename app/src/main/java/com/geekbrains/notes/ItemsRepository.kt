@@ -6,6 +6,6 @@ import java.util.*
 interface ItemsRepository {
     fun getItems(callback: Consumer<Items>)
     fun removeItem(uuid: UUID)
-    fun addItem(item: Item)
+    fun setItem(item: Item)
     fun setUserId(userId: String)
 }

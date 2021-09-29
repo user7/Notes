@@ -7,7 +7,7 @@ import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
 
 fun d(str: String) {
-    Log.d("==", str)
+    Log.d("++", str)
 }
 
 class MainActivity : AppCompatActivity() {
