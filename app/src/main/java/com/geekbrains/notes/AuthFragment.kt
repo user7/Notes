@@ -20,7 +20,7 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
                 model.load()
                 model.setInterfaceState(MainViewModel.InterfaceState.SHOW_LIST)
             } else {
-                Toast.makeText(context, "Auth failed: ${task.exception.toString()}", Toast.LENGTH_LONG)
+                Toast.makeText(context, "auth failed: ${task.exception.toString()}", Toast.LENGTH_LONG)
             }
         }
 
