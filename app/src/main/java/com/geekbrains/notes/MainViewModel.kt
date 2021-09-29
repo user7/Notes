@@ -122,8 +122,6 @@ class MainViewModel : ViewModel() {
 
     private fun setupEditNew(index: Int) {
         if (index < 0 || index > items.size) { // при вставке индекс равный size валиден
-            // специальный случай -1 допускается
-            assert(index == -1, { "incorrect usage of setupEditNew i=$index is not in [0,${items.size}]" })
             setupEditingDisabled()
         } else {
             editingState = EditingState(index, true, Item())
@@ -132,8 +130,6 @@ class MainViewModel : ViewModel() {
 
     private fun setupEditOld(index: Int) {
         if (index < 0 || index >= items.size) { // при редактировании максимальный индекс size - 1
-            // специальный случай -1 допускается
-            assert(index == -1, { "incorrect usage of setupEditOld i=$index is not in [0,${items.size})" })
             setupEditingDisabled()
         } else {
             editingState = EditingState(index, false, items[index])
