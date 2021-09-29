@@ -5,16 +5,18 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.*
 
-const val USERS = "users"
-const val ITEMS = "items"
-const val DATE = "date"
-const val NAME = "name"
-const val DESC = "desc"
-const val LASTACCESS = "lastaccess"
-
 class ItemsRepositoryFirestore : ItemsRepository {
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
     private var userId: String = ""
+
+    companion object {
+        const val USERS = "users"
+        const val ITEMS = "items"
+        const val DATE = "date"
+        const val NAME = "name"
+        const val DESC = "desc"
+        const val LASTACCESS = "lastaccess"
+    }
 
     override fun setUserId(userId: String) {
         this.userId = userId
