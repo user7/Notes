@@ -2,13 +2,8 @@ package com.geekbrains.notes
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
-
-fun d(str: String) {
-    Log.d("++", str)
-}
 
 class MainActivity : AppCompatActivity() {
     var isPortrait: Boolean = true
