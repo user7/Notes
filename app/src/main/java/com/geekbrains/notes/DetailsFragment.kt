@@ -34,7 +34,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         saveButton.setOnClickListener { handleSave() }
         deleteButton = view.findViewById(R.id.details_button_delete)
         deleteButton.setOnClickListener { handleDelete() }
-        model.interfaceState.observe(viewLifecycleOwner) { _ -> handleInterfaceStateChanged() }
+        model.interfaceState.observe(viewLifecycleOwner) { handleInterfaceStateChanged() }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

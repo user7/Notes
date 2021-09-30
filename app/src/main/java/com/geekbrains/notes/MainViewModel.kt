@@ -26,10 +26,10 @@ class MainViewModel : ViewModel() {
     // на SHOW_DETAILS происходит загрузка редактируемого элемента в DetailsFragment, обзервер
     // переменной interfaceState используется для отправки сигнала "обновись" из ListFragment
     // в DetailsFragment.
-    enum class InterfaceState { SHOW_LIST, SHOW_DETAILS, SHOW_AUTH }
+    enum class InterfaceState { SHOW_LIST, SHOW_DETAILS }
 
     private val mutableInterfaceState: MutableLiveData<InterfaceState> =
-        MutableLiveData(InterfaceState.SHOW_AUTH)
+        MutableLiveData(InterfaceState.SHOW_LIST)
 
     fun setInterfaceState(state: InterfaceState) = mutableInterfaceState.postValue(state)
     val interfaceState: LiveData<InterfaceState> = mutableInterfaceState
@@ -41,7 +41,12 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    fun setUserId(userId: String) = itemsRepository.setUserId(userId)
+    private var userId: String? = null
+    fun setUserId(userId: String) {
+        this.userId = userId
+        itemsRepository.setUserId(userId)
+    }
+    fun isSignedIn() = userId != null
 
     // index = -1 - невалидная позиция, остальные поля игнорируются
     // index >= 0 - индекс где редактировать или вставить новый, от 0 до size - 1

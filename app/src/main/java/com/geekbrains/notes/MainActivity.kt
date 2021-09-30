@@ -14,8 +14,8 @@ class MainActivity : AppCompatActivity() {
         isPortrait = resources.getBoolean(R.bool.isPortrait)
         model.interfaceState.observe(this) { state -> handleStateChange(state) }
         setContentView(R.layout.activity_main)
-
         handleStateChange(model.interfaceState.value!!)
+        showAuthDialog()
     }
 
     override fun onBackPressed() {
@@ -30,15 +30,13 @@ class MainActivity : AppCompatActivity() {
         val t = supportFragmentManager.beginTransaction()
         if (isPortrait) {
             when (state) {
-                MainViewModel.InterfaceState.SHOW_LIST -> t.hide(authFrag()).hide(detailFrag()).show(listFrag())
-                MainViewModel.InterfaceState.SHOW_DETAILS -> t.hide(authFrag()).hide(listFrag()).show(detailFrag())
-                MainViewModel.InterfaceState.SHOW_AUTH -> t.show(authFrag()).hide(listFrag()).hide(detailFrag())
+                MainViewModel.InterfaceState.SHOW_LIST -> t.hide(detailFrag()).show(listFrag())
+                MainViewModel.InterfaceState.SHOW_DETAILS -> t.hide(listFrag()).show(detailFrag())
             }
         } else {
             when (state) {
-                MainViewModel.InterfaceState.SHOW_LIST -> t.hide(authFrag()).show(detailFrag()).show(listFrag())
-                MainViewModel.InterfaceState.SHOW_DETAILS -> t.hide(authFrag()).show(listFrag()).show(detailFrag())
-                MainViewModel.InterfaceState.SHOW_AUTH -> t.show(authFrag()).hide(listFrag()).hide(detailFrag())
+                MainViewModel.InterfaceState.SHOW_LIST -> t.show(detailFrag()).show(listFrag())
+                MainViewModel.InterfaceState.SHOW_DETAILS -> t.show(listFrag()).show(detailFrag())
             }
         }
         t.commit()
@@ -50,6 +48,9 @@ class MainActivity : AppCompatActivity() {
     private fun detailFrag(): Fragment =
         supportFragmentManager.findFragmentByTag("details_fragment_tag")!!
 
-    private fun authFrag(): Fragment =
-        supportFragmentManager.findFragmentByTag("auth_fragment_tag")!!
+    private fun showAuthDialog() {
+        if (!model.isSignedIn()) {
+            AuthDialogFragment().show(supportFragmentManager, null)
+        }
+    }
 }
