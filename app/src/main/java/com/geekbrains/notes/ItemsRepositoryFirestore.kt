@@ -9,13 +9,23 @@ class ItemsRepositoryFirestore : ItemsRepository {
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
     private var userId: String = ""
 
-    companion object {
+    private companion object {
         const val USERS = "users"
         const val ITEMS = "items"
         const val DATE = "date"
         const val NAME = "name"
         const val DESC = "desc"
         const val LASTACCESS = "lastaccess"
+
+        fun <TResult> Task<TResult>.report(description: String): Task<TResult> {
+            return this.addOnCompleteListener {
+                if (it.isSuccessful) {
+                    d("ok $description")
+                } else {
+                    d("failed $description: ${it.exception.toString()}")
+                }
+            }
+        }
     }
 
     override fun setUserId(userId: String) {
@@ -62,15 +72,5 @@ class ItemsRepositoryFirestore : ItemsRepository {
         db.collection(USERS).document(userId).collection(ITEMS)
             .document(item.uuid.toString()).set(data)
             .report("upsert $USERS.$userId.$ITEMS.${item.uuid.toString()}")
-    }
-}
-
-private fun <TResult> Task<TResult>.report(description: String): Task<TResult> {
-    return this.addOnCompleteListener {
-        if (it.isSuccessful) {
-            d("ok $description")
-        } else {
-            d("failed $description: ${it.exception.toString()}")
-        }
     }
 }
