@@ -23,7 +23,11 @@ class AuthDialogFragment : DialogFragment() {
                 model.setInterfaceState(MainViewModel.InterfaceState.SHOW_LIST)
                 dismiss()
             } else {
-                Toast.makeText(context, "auth failed: ${task.exception.toString()}", Toast.LENGTH_LONG)
+                Toast.makeText(
+                    context,
+                    "auth failed: ${task.exception.toString()}",
+                    Toast.LENGTH_LONG
+                )
             }
         }
 
@@ -39,7 +43,9 @@ class AuthDialogFragment : DialogFragment() {
         val dialog = AlertDialog.Builder(requireContext())
             .setTitle(R.string.sign_in_dialog_title)
             .setView(view)
-            .show()
+            .setCancelable(false)
+            .create()
+        dialog.setCanceledOnTouchOutside(false)
         return dialog
     }
 }
