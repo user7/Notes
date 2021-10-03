@@ -9,4 +9,7 @@
     <string name="context_action_delete">Delete</string>
     <string name="context_action_edit">Edit</string>
     <string name="sign_in_dialog_title">Please sign in</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="confirm_delete">Are you sure?</string>
 </resources>
