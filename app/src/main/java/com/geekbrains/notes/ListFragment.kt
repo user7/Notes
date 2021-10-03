@@ -22,19 +22,17 @@ class ListFragment : Fragment(R.layout.fragment_list) {
         model.removedItemIndex.observe(viewLifecycleOwner) { i -> adapter.handleRemove(i) }
         model.insertedItemIndex.observe(viewLifecycleOwner) { i -> adapter.handleInsert(i) }
         model.insertedItemsStart.observe(viewLifecycleOwner) { i -> adapter.handleAddAll(i) }
-        view.findViewById<Button>(R.id.add_note).setOnClickListener {
-            model.editNewItem()
-        }
+        view.findViewById<Button>(R.id.add_note).setOnClickListener { model.editNewItem() }
 
         view.findViewById<RecyclerView>(R.id.notes_list).adapter = adapter
     }
 
     override fun onCreateContextMenu(
         menu: ContextMenu,
-        v: View,
+        view: View,
         menuInfo: ContextMenu.ContextMenuInfo?
     ) {
-        super.onCreateContextMenu(menu, v, menuInfo)
+        super.onCreateContextMenu(menu, view, menuInfo)
         val menuInflater: MenuInflater = requireActivity().menuInflater
         menuInflater.inflate(R.menu.list_context, menu)
     }
