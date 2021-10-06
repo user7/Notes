@@ -8,5 +8,8 @@
     <string name="details_date_picker_desc">Edit Date</string>
     <string name="context_action_delete">Delete</string>
     <string name="context_action_edit">Edit</string>
-    <string name="sign_in_button_label">Sign in</string>
+    <string name="sign_in_dialog_title">Please sign in</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="confirm_delete">Are you sure?</string>
 </resources>

@@ -35,42 +35,48 @@ class ItemsRepositoryFirestore : ItemsRepository {
     }
 
     override fun getItems(callback: Consumer<Items>) {
-        db.collection(USERS).document(userId).collection(ITEMS).get()
-            .addOnCompleteListener {
-                if (it.isSuccessful) {
-                    val items: Items = Items()
-                    for (doc in it.result) {
-                        items.add(
-                            Item(
-                                doc.getString(NAME)!!,
-                                doc.getString(DESC)!!,
-                                doc.getDate(DATE)!!,
-                                UUID.fromString(doc.id),
+        if (userId != "") {
+            db.collection(USERS).document(userId).collection(ITEMS).get()
+                .addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        val items: Items = Items()
+                        for (doc in it.result) {
+                            items.add(
+                                Item(
+                                    doc.getString(NAME)!!,
+                                    doc.getString(DESC)!!,
+                                    doc.getDate(DATE)!!,
+                                    UUID.fromString(doc.id),
+                                )
                             )
-                        )
+                        }
+                        callback.accept(items)
+                    } else {
+                        d("failed get $USERS.$userId.$ITEMS: ${it.exception.toString()}")
                     }
-                    callback.accept(items)
-                } else {
-                    d("failed get $USERS.$userId.$ITEMS: ${it.exception.toString()}")
                 }
-            }
+        }
     }
 
     override fun removeItem(uuid: UUID) {
-        db.collection(USERS).document(userId).collection(ITEMS)
-            .document(uuid.toString())
-            .delete()
-            .report("delete $USERS.$userId.$ITEMS.${uuid.toString()}")
+        if (userId != "") {
+            db.collection(USERS).document(userId).collection(ITEMS)
+                .document(uuid.toString())
+                .delete()
+                .report("delete $USERS.$userId.$ITEMS.${uuid.toString()}")
+        }
     }
 
     override fun setItem(item: Item) {
-        val data: Map<String, Any> = hashMapOf(
-            NAME to item.name,
-            DESC to item.desc,
-            DATE to item.date,
-        );
-        db.collection(USERS).document(userId).collection(ITEMS)
-            .document(item.uuid.toString()).set(data)
-            .report("upsert $USERS.$userId.$ITEMS.${item.uuid.toString()}")
+        if (userId != "") {
+            val data: Map<String, Any> = hashMapOf(
+                NAME to item.name,
+                DESC to item.desc,
+                DATE to item.date,
+            );
+            db.collection(USERS).document(userId).collection(ITEMS)
+                .document(item.uuid.toString()).set(data)
+                .report("upsert $USERS.$userId.$ITEMS.${item.uuid.toString()}")
+        }
     }
 }

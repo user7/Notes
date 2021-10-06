@@ -7,6 +7,7 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResultListener
 import java.text.DateFormat.getDateTimeInstance
 import java.util.*
 
@@ -34,7 +35,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         saveButton.setOnClickListener { handleSave() }
         deleteButton = view.findViewById(R.id.details_button_delete)
         deleteButton.setOnClickListener { handleDelete() }
-        model.interfaceState.observe(viewLifecycleOwner) { _ -> handleInterfaceStateChanged() }
+        model.interfaceState.observe(viewLifecycleOwner) { handleInterfaceStateChanged() }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -84,7 +85,18 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
     }
 
     private fun handleDelete() {
-        model.removeOrDiscardEditedItem()
+        if (model.getEditingState().insertNew) {
+            // новый элемент просто выкидываем
+            model.removeOrDiscardEditedItem()
+        } else {
+            // если элемент уже существовал, то сначала запрашиваем подтверждение
+            setFragmentResultListener(DeleteWarningDialogFragment.KEY) { key, bundle ->
+                if (bundle.getBoolean(DeleteWarningDialogFragment.ISYES)) {
+                    model.removeOrDiscardEditedItem()
+                }
+            }
+            DeleteWarningDialogFragment().show(parentFragmentManager, null)
+        }
     }
 
     private fun pickDate() {
